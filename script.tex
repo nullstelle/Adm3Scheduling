@@ -1,0 +1,202 @@
+\documentclass[11pt,a4paper,notitlepage]{article}
+\usepackage{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{algorithmic}
+\usepackage{float}
+\usepackage[pdftex]{hyperref}
+\usepackage{algorithm}
+\usepackage{shadethm}
+
+% Define header and footer.
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+%\renewcommand{\footrulewidth}{0.5pt}
+
+% Set of numbers.
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\Z}{\mathbb{Z}}
+\providecommand{\N}{\mathbb{N}}
+\providecommand{\Q}{\mathbb{Q}}
+\providecommand{\C}{\mathbb{C}}
+
+% Complexity zoo.
+\renewcommand{\P}{\mathcal{P}}
+\providecommand{\NP}{\mathcal{NP}}
+\providecommand{\RP}{\mathcal{RP}}
+\providecommand{\PSPACE}{\mathcal{PSPACE}}
+\providecommand{\coNP}{\text{co-}\NP}
+\providecommand{\coRP}{\text{co-}\RP}
+\providecommand{\BPP}{\mathcal{BPP}}
+
+% Landau symbols
+\providecommand{\Oh}{\mathcal{O}} % big O
+\providecommand{\oh}{\mathrm{o}}  % small O
+
+
+
+%\DeclareMathOperator{\sgn}{sgn}
+
+\providecommand{\half}{\frac{1}{2}}
+\providecommand{\modOp}{\ \mathrm{mod}\ }
+\providecommand{\divOp}{\ \mathrm{div}\ }
+\providecommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\providecommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\providecommand{\ceiling}[1]{\left\lceil #1 \right\rceil}
+\providecommand{\abs}[1]{\left\lvert #1 \right\rvert}
+
+% Environment definitions.
+\theoremstyle{plain}
+\newshadetheorem{defn}{Definition}[section]
+\newtheorem{note}{Notation}[section]
+\newtheorem{cor}[defn]{Corollary}
+\newtheorem{thm}[defn]{Theorem}
+\newtheorem{prop}[defn]{Proposition}
+\newtheorem{lemma}[defn]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{remark}[defn]{Remark}
+\newtheorem{ex}[defn]{Example}
+\newtheorem{exercise}{Exercise}
+\setcounter{exercise}{-1}
+
+% Algorithm package.
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\renewcommand{\listalgorithmname}{List of Algorithms}
+\floatname{algorithm}{Algorithm}
+
+\bibliographystyle{alphadin}
+
+\author{Steffen Suerbier\\Benjamin Labonte}
+\title{\sc AdM III: Scheduling and Project Planning}
+
+\begin{document}
+
+% use roman page numbers for the table of contents
+\pagenumbering{roman}
+
+\maketitle
+
+\begin{abstract}
+Lecture notes taken during the 2012/2013 lecture ``Scheduling and Project Planning'' by Prof. Dr. Rolf H. Möhring.
+\end{abstract}
+
+\tableofcontents
+
+% \listofalgorithms
+\pagebreak
+
+% Begin sections at 0 (for preface).
+% \setcounter{section}{-1}
+
+%\include{preface}
+
+\pagenumbering{arabic}
+
+% Vorlesung 1
+
+\section{Projects and Partial Orders} % (fold)
+\label{sec:projects_and_partial_orders}
+
+What makes a project?
+\begin{itemize}
+  \item activities or jobs $j\in V = \{1,2,\cdots,n\}$
+  \item job data
+  \begin{itemize}
+    \item processing time/duration (deterministic/random)
+    \item resource consumption
+    \item processing cost
+  \end{itemize}
+  \item project data
+  \begin{itemize}
+    \item available resources
+    \item limited budget
+  \end{itemize}
+  \item project rules for carrying out the project
+  \begin{itemize}
+    \item temporal conditions
+    \item resource conditions
+    \item setups
+  \end{itemize}
+\end{itemize}
+
+Precedence constraints, i.e. job $j$ has to wait for $i$ define a partial ordering on $V$. We write $i<j$ if $j$ must wait for $i$.
+
+\begin{defn}[Partial Ordering]
+  A (strict) partial order is a binary relation $<$ over a set $V$ which is
+  \begin{enumerate}[(i)]
+    \item assymmetric: $i<j \Rightarrow j \not < i$
+    \item transitive: $i<j,\ j<k \Rightarrow i < k$
+  \end{enumerate}
+\end{defn}
+
+\begin{defn}[Transitive Reduction of $<$, Transitive closure]
+  The transitive reduction of the finite partial order $(V,<)$ is the digraph $G = (V,E)$ with the edges
+  \[ E = \{(i,j)\ |\ i,j\in V,\ i<j,\ \nexists k: i < k < j\}. \]
+  In the context of scheduling this is also called activity-on-node diagram. For any graph $G = (V,E)$ the edge set defined by
+  \[ E^{trans} = \{(i,j)\ |\ \exists \text{finite sequence } i=i_{0},\cdots,i_{k} = j: (i_{j}, i_{j+1})\in E\}\]
+  denotes the transitive closure of $E$.
+\end{defn}
+
+\begin{ex}[Bridge Construction Project]
+  % TODO(steffen): add image
+\end{ex}
+
+\begin{defn}
+  \begin{align*}
+    Pred_{G}(i) &= \{j\in V \ |\ j < i\}\quad &&\text{set of predecessors}\\
+    Suc_{G}(i) &= \{j\in V \ |\ j > i\}\quad &&\text{set of successors}\\
+    ImPred_{G}(i) &= \{j\in V \ |\ (j,i)\in E\}\quad &&\text{set of predecessors}\\
+    ImSuc_{G}(i) &= \{j\in V \ |\ (i,j)\in E\}\quad &&\text{set of predecessors}
+  \end{align*}
+  We call an element maximal if it has no successors, minimal if it has no predecessors. If there is only one maximal (minimal) element it is called greatest (smallest). $i,j$ are comparable ($i \sim_{G} j$) if $i<j$ or $j>i$ otherwise they are incomparable ($i\parallel_{G} j$).
+\end{defn}
+
+\begin{lemma}
+  \label{lemma:gen_rel}
+  Let $(V,<)$ be a finite partial order and $(V,E)$ be its transitive reduction.
+  Then $E$ is the smallest (under $\leq$) binary relation, s.t. $E^{trans} =\ <$.
+\end{lemma}
+
+\begin{proof}
+  Show that $E^{trans} =\ <$. Let $i<j$ and $(i,j)\not\in E$. Then there is a $k\in V$ s.t. $i<k<j$. As $<$ is acyclic and finite, by iterating, we obtain a finite sequence $i=i_{0}\rightarrow \cdots \rightarrow j$.
+\end{proof}
+
+\begin{exercise}
+  Show that $E^{trans}$ exists.
+\end{exercise}
+
+\begin{remark}
+  Lemma \ref{lemma:gen_rel} does not hold for relations with cycles or infinite ground sets.
+\end{remark}
+
+\begin{exercise}
+  Formulate an algorithm for constructing the transitive closure of a digraph.
+\end{exercise}
+
+\begin{exercise}
+  Formulate an algorithm for constructing the transitive reduction of a partial order or a directed acyclic graph.
+\end{exercise}
+
+\begin{exercise}
+  Prove an $\Oh(n^{3})$ upper bound on the running times of the algorithms.
+\end{exercise}
+
+% section projects_and_partial_orders (end)
+
+%\appendix
+%\include{appendix}
+
+% bind in bibliography
+%\bibliography{adm3}
+
+\end{document}

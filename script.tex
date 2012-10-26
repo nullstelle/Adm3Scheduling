@@ -11,6 +11,7 @@
 \usepackage[pdftex]{hyperref}
 \usepackage{algorithm}
 \usepackage{shadethm}
+\usepackage{dsfont}
 
 % Define header and footer.
 \usepackage{fancyhdr}
@@ -56,17 +57,19 @@
 % Environment definitions.
 \theoremstyle{plain}
 \newshadetheorem{defn}{Definition}[section]
+\newshadetheorem{problem}{Problem}
 \newtheorem{note}{Notation}[section]
 \newtheorem{cor}[defn]{Corollary}
-\newtheorem{thm}[defn]{Theorem}
+\newshadetheorem{theorem}[defn]{Theorem}
 \newtheorem{prop}[defn]{Proposition}
 \newtheorem{lemma}[defn]{Lemma}
 
 \theoremstyle{definition}
 \newtheorem{remark}[defn]{Remark}
-\newtheorem{ex}[defn]{Example}
+\newtheorem{example}[defn]{Example}
 \newtheorem{exercise}{Exercise}
 \setcounter{exercise}{-1}
+\newtheorem*{claim}{Claim}
 
 % Algorithm package.
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
@@ -87,7 +90,8 @@
 \maketitle
 
 \begin{abstract}
-Lecture notes taken during the 2012/2013 lecture ``Scheduling and Project Planning'' by Prof. Dr. Rolf H. Möhring.
+Lecture notes taken during the 2012/2013 lecture ``Scheduling and Project
+Planning'' by Prof. Dr. Rolf H. Möhring.
 \end{abstract}
 
 \tableofcontents
@@ -102,9 +106,9 @@ Lecture notes taken during the 2012/2013 lecture ``Scheduling and Project Planni
 
 \pagenumbering{arabic}
 
-% Vorlesung 1
+% Lecture 1 (2012-10-18)
 
-\section{Projects and Partial Orders} % (fold)
+\section{Projects and Partial Orders}
 \label{sec:projects_and_partial_orders}
 
 What makes a project?
@@ -129,7 +133,8 @@ What makes a project?
   \end{itemize}
 \end{itemize}
 
-Precedence constraints, i.e. job $j$ has to wait for $i$ define a partial ordering on $V$. We write $i<j$ if $j$ must wait for $i$.
+Precedence constraints, i.e. job $j$ has to wait for $i$ define a partial
+ordering on $V$. We write $i<j$ if $j$ must wait for $i$.
 
 \begin{defn}[Partial Ordering]
   A (strict) partial order is a binary relation $<$ over a set $V$ which is
@@ -140,16 +145,18 @@ Precedence constraints, i.e. job $j$ has to wait for $i$ define a partial orderi
 \end{defn}
 
 \begin{defn}[Transitive Reduction of $<$, Transitive closure]
-  The transitive reduction of the finite partial order $(V,<)$ is the digraph $G = (V,E)$ with the edges
+  The transitive reduction of the finite partial order $(V,<)$ is the digraph
+  $G = (V,E)$ with the edges
   \[ E = \{(i,j)\ |\ i,j\in V,\ i<j,\ \nexists k: i < k < j\}. \]
-  In the context of scheduling this is also called activity-on-node diagram. For any graph $G = (V,E)$ the edge set defined by
+  In the context of scheduling this is also called activity-on-node diagram.
+  For any graph $G = (V,E)$ the edge set defined by
   \[ E^{trans} = \{(i,j)\ |\ \exists \text{finite sequence } i=i_{0},\cdots,i_{k} = j: (i_{j}, i_{j+1})\in E\}\]
   denotes the transitive closure of $E$.
 \end{defn}
 
-\begin{ex}[Bridge Construction Project]
+\begin{example}[Bridge Construction Project]
   % TODO(steffen): add image
-\end{ex}
+\end{example}
 
 \begin{defn}
   \begin{align*}
@@ -158,33 +165,41 @@ Precedence constraints, i.e. job $j$ has to wait for $i$ define a partial orderi
     ImPred_{G}(i) &= \{j\in V \ |\ (j,i)\in E\}\quad &&\text{set of predecessors}\\
     ImSuc_{G}(i) &= \{j\in V \ |\ (i,j)\in E\}\quad &&\text{set of predecessors}
   \end{align*}
-  We call an element maximal if it has no successors, minimal if it has no predecessors. If there is only one maximal (minimal) element it is called greatest (smallest). $i,j$ are comparable ($i \sim_{G} j$) if $i<j$ or $j>i$ otherwise they are incomparable ($i\parallel_{G} j$).
+  We call an element maximal if it has no successors, minimal if it has no
+  predecessors. If there is only one maximal (minimal) element it is called
+  greatest (smallest). $i,j$ are comparable ($i \sim_{G} j$) if $i<j$ or $j>i$
+  otherwise they are incomparable ($i\parallel_{G} j$).
 \end{defn}
 
 \begin{lemma}
   \label{lemma:gen_rel}
-  Let $(V,<)$ be a finite partial order and $(V,E)$ be its transitive reduction.
-  Then $E$ is the smallest (under $\leq$) binary relation, s.t. $E^{trans} =\ <$.
+  Let $(V,<)$ be a finite partial order and $(V,E)$ its transitive reduction.
+  Then $E$ is the smallest (under $\subset$) binary relation, s.t.
+  $E^{trans} =\ <$.
 \end{lemma}
 
 \begin{proof}
-  Show that $E^{trans} =\ <$. Let $i<j$ and $(i,j)\not\in E$. Then there is a $k\in V$ s.t. $i<k<j$. As $<$ is acyclic and finite, by iterating, we obtain a finite sequence $i=i_{0}\rightarrow \cdots \rightarrow j$.
+  Show that $E^{trans} =\ <$. Let $i<j$ and $(i,j)\not\in E$. Then there is a
+  $k\in V$ s.t. $i<k<j$. As $<$ is acyclic and finite, by iterating, we obtain
+  a finite sequence $i=i_{0}\rightarrow \cdots \rightarrow j$.
 \end{proof}
+
+\begin{remark}
+  Lemma \ref{lemma:gen_rel} does not hold for relations with cycles or infinite
+  ground sets.
+\end{remark}
 
 \begin{exercise}
   Show that $E^{trans}$ exists.
 \end{exercise}
-
-\begin{remark}
-  Lemma \ref{lemma:gen_rel} does not hold for relations with cycles or infinite ground sets.
-\end{remark}
 
 \begin{exercise}
   Formulate an algorithm for constructing the transitive closure of a digraph.
 \end{exercise}
 
 \begin{exercise}
-  Formulate an algorithm for constructing the transitive reduction of a partial order or a directed acyclic graph.
+  Formulate an algorithm for constructing the transitive reduction of a partial
+  order or a directed acyclic graph.
 \end{exercise}
 
 \begin{exercise}
@@ -192,6 +207,129 @@ Precedence constraints, i.e. job $j$ has to wait for $i$ define a partial orderi
 \end{exercise}
 
 % section projects_and_partial_orders (end)
+
+\section{Scheduling subject to scarce resources: Introduction and complexity}
+\label{sec:resource_constrained_scheduling}
+
+% Lecture 4 (2012-10-26)
+
+\begin{example}
+  Consider the following standard model in parallel processing environments.
+  Every long job is cut into pieces of length $1$. $m$-machine problems for
+  $m\geq 2$, $G$ precedence constraints, $x_j = 1, \kappa = C_{max}$.
+
+  \paragraph{Results}
+
+  $m=2$ polynomially solvable\\
+  $m=3$ open (for a long time)\\
+  $m \geq 4$ $\NP-complete$
+
+  \paragraph{Idea for $m=2$}
+  Match jobs that are scheduled in same time slot. Use incomparability graph
+  $Incomp(G)$ with vertices $V=\text{set of jobs}$ and edges
+  $(i,j)\in E\Leftrightarrow i\parallel_G j$.
+  % TODO(steffen): concrete example
+\end{example}
+
+\begin{theorem}
+  $C_{max}^{OPT, G}(\mathds{1}) = \text{maximum size of a matching in } Incomp(G) + \#\text{unmatched jobs}$ [Fujii et al. 67,71].
+\end{theorem}
+
+\begin{proof}
+  Construct a schedule from the scheduling from the matching requires
+  "uncrossing" of crossings.
+
+  crossing:
+  % TODO(steffen): add image for crossings
+  Assume $(a,c)$ and $(b,d)$ are precedence constraints, then a matching of $a$
+  with $d$ and $b$ with $c$ would lead to an infeasible schedule. The
+  uncrossing is simply the matching $a$ with $b$ and $c$ with $d$.
+
+  \begin{claim}
+    $\forall$ matchings $M$ there is a non-crossing matching of the same size
+    that can be obtained by uncrossing crossings in any order
+  \end{claim}
+
+  \begin{proof}
+    Every oncrossing reduces the number of crossings. Suppose not, i.e.
+    consider $(u_{1}, u_{2}), (u_{3}, u_{4})$, uncross the matching
+    $u_{1}\leftrightarrow u_{4}, u_{2}\leftrightarrow u_{3}$ and this gives a
+    new crossing $u_{1}\leftrightarrow u_{2}, v_{1}\leftrightarrow v_{2}$
+    $\Rightarrow \exists u_{1}<v_{1}, v_{2}<u_{2}: (v_{1},v_{2})\in M$.
+    % TODO(steffen): add pictures for this
+    But that means that before uncrossing $(v_{1},v_{2})$ crossed with
+    $(u_{1}m u_{4})$ which no longer exists.
+
+    This shows that for every new crossing an old crossing involving the same
+    edges is uncrossed.
+  \end{proof}
+
+  Now assume that $M$ is non-crossing. Turn that into a schedule.
+  \begin{enumerate}
+    % TODO(steffen): picture missing
+    \item order the matched edges [picture], if one of $\{a,b\}$ is before on
+      of $\{c,d\}$ in $G^{trans}$ (possible because of non-crossing)
+    \item order unmatched jobs and matched edges [picture] if $a$ is before
+      one of $\{c,d\}$ in $G^{trans}$. (similar: [picture matching before job]).
+      This is well defined since $c\parallel_{G} d$.
+    \item take any linear extension of the transitive closure of $\prec$
+      defined in (1), (2) and $a<_{G}$ between unmatched jobs.
+    \item Replace matching edges by their two end points. This defines $G^{*}$
+      on $V$.
+    \item Consider $ES_{G^{*}}(\mathds{1})$
+  \end{enumerate}
+\end{proof}
+
+\begin{example}[continued]
+  % TODO(steffen): add picture
+  TODO
+\end{example}
+
+\begin{problem}[$n$-\textsc{Machine Problem}]
+  % TODO(steffen): find a better way to define problems
+  \quad
+  \begin{algorithmic}
+    \REQUIRE $G,m,t,x=\mathds{1}$
+    \ENSURE Is there a feasible schedule of length $\leq t$?
+  \end{algorithmic}
+\end{problem}
+
+\begin{theorem}
+  The $m$-machine problem is $\NP-complete$ for $m\geq 4$.
+\end{theorem}
+
+\begin{proof}
+  Reduction from \textsc{Clique}. Vertex jobs $u_{1},\cdots,u_{n}$, edge jobs
+  $u_{ij}$, precedence constraints $u_{ij}>u_{i}, u_{ij}>u_{j}$ and dummy jobs
+  which provide a frame. $k=3$ and $t=3$ (always).
+
+  \paragraph{Idea} Can schedule $k$ vertex jobs in slot $A$, $k\choose 2$ edge
+  jobs and remaining vertex jobs in slot $B$ and remaining edge jobs in slot
+  $C$.
+
+  % TODO(steffen): picture and text, up to this point this is totally useless
+
+  If $G$ constains a clique of size $k$ then we can schedule the vertex jobs
+  from the clique in the first time slot, the edge jobs of the clique and the
+  remaining vertex jobs in the second slot and the remaining edge jobs in the
+  third time slot. So we get a schedule in $3$ time slots.
+
+  If $G$ does not contain a cliqe of size $k$ then one machine is idle in time
+  slot 2 and we would need 4 time slots.
+\end{proof}
+
+\begin{exercise}
+  Show that Jacksons's rule constructs an optimal schedule for $L_{max}$ on one
+  machine.
+\end{exercise}
+
+\begin{exercise}
+  Show that the 3-machine problem can be solved in polynomial time for
+  precedence constrains of fixed with (i.e. the size of the largest antichain
+  is bounded by a constant).
+\end{exercise}
+
+% section scheduling_subject_to_scarce_resources_introduction_and_complexity (end)
 
 %\appendix
 %\include{appendix}
